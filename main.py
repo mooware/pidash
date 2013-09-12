@@ -1,7 +1,13 @@
-from bottle import route, run
+import os
+from bottle import *
 
 @route('/')
-def main():
-  return "Hello World!"
+@route('/home')
+def home():
+  return template('home')
 
-run(host='localhost', port=8080, debug=True)
+@route('/css/<filename>')
+def file(filename):
+  return static_file(request.path, root=os.getcwd())
+
+run(host='localhost', port=8080, debug=True, reloader=True)
