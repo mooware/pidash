@@ -18,8 +18,7 @@
           % command = ['START', 'STOP'][int(is_running)] # if-expr does not work
           <input type="hidden" name="unit" value="{{unit}}"></input>
           <input type="hidden" name="command" value="{{command.lower()}}"></input>
-          <button type="submit" style="width: 100%"
-                  class="btn btn-sm {{'btn-danger' if is_running else 'btn-success'}}">
+          <button type="submit" class="btn btn-sm btn-cmd {{'btn-danger' if is_running else 'btn-success'}}">
             {{command}}
           </button>
         </form>

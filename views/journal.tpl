@@ -1,4 +1,5 @@
 % rebase('base.tpl', page='Journal')
+<a href="?all=1">show all</a>
 <table class="table">
   <tbody>
   % ERR = 3
