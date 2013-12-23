@@ -12,7 +12,7 @@ def make_service_row(array):
   return (is_failed, is_running, name, unit, act, sub)
 
 def make_journal_row(json):
-  prio = json['PRIORITY']
+  prio = int(json['PRIORITY'])
   ts = get_journal_timestamp(json)
   app = get_journal_application(json)
   msg = json['MESSAGE']
@@ -25,6 +25,23 @@ def get_journal_timestamp(json):
 def get_journal_application(json):
   return json.get('SYSLOG_IDENTIFIER') or json.get('_COMM')
 
+def get_service_data():
+  # systemctl --full list-units
+  return subprocess.check_output(['cat', 'systemctl-data.txt'])
+
+def get_journal_data():
+  # sudo journalctl --this-boot --output=json
+  return subprocess.check_output(['cat', 'journal.json'])
+
+def get_uptime_data():
+  return subprocess.check_output(['uptime'])
+
+def run_system_command(command):
+  subprocess.check_call(['sudo', 'systemctl', command])
+
+def run_service_command(service, command):
+  subprocess.check_call(['sudo', 'systemctl', command, service])
+
 @route('/css/<filename>')
 @route('/js/<filename>')
 @route('/fonts/<filename>')
@@ -32,15 +49,20 @@ def file(filename):
   return static_file(request.path, root=os.getcwd())
 
 @route('/')
-@route('/home')
 def home():
-  return template('home')
+  uptime = get_uptime_data()
+  return template('home', uptime=uptime)
+
+@post('/command')
+def system_command():
+  command = request.forms.get('command').lower()
+  run_system_command(command)
+  redirect('/')
 
 @route('/services')
 def services():
   # get service data from systemctl
-  # systemctl list-units
-  text = subprocess.check_output(['cat', 'systemctl-data.txt'])
+  text = get_service_data()
   lines = text.splitlines()
   # the service data ends with an empty line
   end_index = lines.index('')
@@ -54,17 +76,17 @@ def services():
   rows = table[1:]
   return template('services', header=header, rows=rows)
 
-@route('/services/command')
+@post('/services/command')
 def service_command():
   unit = request.forms.get('unit')
-  #command = ('start' if request.forms.get('command') = 'start' else 'stop')
-  return (unit, command)
+  command = request.forms.get('command').lower()
+  run_service_command(unit, command)
+  redirect('/services')
 
 @route('/journal')
 def journal():
-  # get service data from systemctl
-  # journalctl --this-boot --output=json
-  text = subprocess.check_output(['cat', 'journal.json'])
+  # get journal data from journalctl
+  text = get_journal_data()
   lines = text.splitlines()
   # every line is a json doc
   data = [json.loads(s) for s in lines]
