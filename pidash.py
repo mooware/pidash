@@ -34,14 +34,14 @@ def make_service_row(array):
   return (is_failed, is_running, name, unit, act, sub)
 
 def make_journal_row(json):
-  prio = int(json['PRIORITY'])
+  prio = int(json.get('PRIORITY', 0))
   ts = get_journal_timestamp(json)
   app = get_journal_application(json)
-  msg = json['MESSAGE']
+  msg = json.get('MESSAGE', '-- no message --')
   return (prio, ts, app, msg)
 
 def get_journal_timestamp(json):
-  ts = int(json['__REALTIME_TIMESTAMP'])
+  ts = int(json.get('__REALTIME_TIMESTAMP', 0))
   return str(datetime.fromtimestamp(ts / 1000000.0))
 
 def get_journal_application(json):
