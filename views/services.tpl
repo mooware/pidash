@@ -15,7 +15,11 @@
       <td>{{sub}}</td>
       <td>
         <form action="/services/command" method="post">
-          % command = ['START', 'STOP'][int(is_running)] # if-expr does not work
+          % if is_running:
+          %   command = 'STOP'
+          % else:
+          %   command = 'START'
+          % end
           <input type="hidden" name="unit" value="{{unit}}"></input>
           <input type="hidden" name="command" value="{{command.lower()}}"></input>
           <button type="submit" class="btn btn-sm btn-cmd {{'btn-danger' if is_running else 'btn-success'}}">
