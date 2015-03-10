@@ -30,7 +30,7 @@ def make_journal_table(data):
 def make_service_row(array):
   (unit, load, act, sub, name) = array
   is_failed = (act == 'failed')
-  is_running = (sub not in ['exited', 'dead'])
+  is_running = (sub not in ['exited', 'dead', 'failed'])
   return (is_failed, is_running, name, unit, act, sub)
 
 def make_journal_row(json):
