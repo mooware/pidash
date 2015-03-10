@@ -1,7 +1,11 @@
 % rebase('base.tpl', page='Journal')
-<a href="?all=1">show all</a>
 <table class="table">
   <tbody>
+    <tr>
+      <td colspan="3">
+        <a href="?all=1">show all</a>
+      </td>
+    </tr>
   % ERR = 3
   % NOTICE = 5
   % for (prio, time, comm, msg) in rows:
